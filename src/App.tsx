@@ -1,7 +1,11 @@
-import "./App.css";
+import SearchPage from "./pages/search-page/SearchPage";
 
 function App() {
-  return <div>Hello world</div>;
+  return (
+    <>
+      <SearchPage />
+    </>
+  );
 }
 
 export default App;
