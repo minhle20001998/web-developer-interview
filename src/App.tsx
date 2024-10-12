@@ -1,4 +1,4 @@
-import SearchPage from "./pages/search-page/SearchPage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (

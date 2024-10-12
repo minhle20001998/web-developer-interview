@@ -1,5 +1,5 @@
-import SearchBox from "./components/search-box/SearchBox";
-import SearchResult from "./components/search-result/SearchResult";
+import SearchBox from "./components/SearchBox";
+import SearchResult from "./components/SearchResult";
 
 function SearchPage() {
   return (
@@ -9,7 +9,7 @@ function SearchPage() {
           <SearchBox />
         </div>
       </div>
-      <div className="py-10 w-4/5 mx-auto">
+      <div className="pb-20 w-4/5 mx-auto">
         <SearchResult />
       </div>
     </>

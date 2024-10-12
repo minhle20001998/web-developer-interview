@@ -20,10 +20,13 @@ function SearchBox() {
         <div className="absolute top-2/4 right-2 -translate-y-2/4">
           <CrossIcon />
         </div>
-        <div className="absolute w-full p-5 rounded-b-lg shadow-general border border-t-0 bg-white flex flex-col gap-[10px]">
-          {suggestions &&
-            suggestions.map((suggestion) => <div>{suggestion}</div>)}
-        </div>
+        {suggestions && (
+          <div className="absolute w-full p-5 rounded-b-lg shadow-general border border-t-0 bg-white flex flex-col gap-[10px]">
+            {suggestions.map((suggestion) => (
+              <div>{suggestion}</div>
+            ))}
+          </div>
+        )}
       </div>
       <button className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-lg">
         <SearchIcon />
