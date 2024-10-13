@@ -6,27 +6,27 @@ import { fetchSearchResult } from "@/services/search";
 
 function SearchPage() {
   const [searchResult, setSearchResult] = useState<SearchResultResponse>();
-  const [isSearched, setIsSearched] = useState<boolean>(false);
 
   const onSearch = (keyword: string) => {
     fetchSearchResult(keyword).then(({ data }) => {
       if (data) setSearchResult(data);
-      setIsSearched(true);
     });
   };
 
   return (
     <>
-      <div className="shadow-general">
+      <div className="shadow-general sticky top-0 bg-white">
         <div className="py-10 w-4/5 mx-auto">
           <SearchBox onSearch={onSearch} />
         </div>
       </div>
       <div className="pb-20 w-4/5 mx-auto">
-        {isSearched && (
+        {searchResult && (
           <SearchResult
-            items={searchResult?.ResultItems}
-            total={searchResult?.TotalNumberOfResults}
+            items={searchResult.ResultItems}
+            total={searchResult.TotalNumberOfResults}
+            page={searchResult.Page}
+            pageSize={searchResult.PageSize}
           />
         )}
       </div>

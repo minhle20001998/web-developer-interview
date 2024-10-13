@@ -11,25 +11,31 @@ function HighlightText(props: IProps) {
   const hightlightText = () => {
     const highlighted: JSX.Element[] = [];
     let lastIndex = 0;
+    let key = 0;
     highlights.forEach(({ BeginOffset, EndOffset }) => {
       if (lastIndex < BeginOffset) {
-        highlighted.push(<span>{text.slice(lastIndex, BeginOffset)}</span>);
+        highlighted.push(
+          <span key={key++}>{text.slice(lastIndex, BeginOffset)}</span>
+        );
       }
 
       highlighted.push(
-        <span className="font-bold">{text.slice(BeginOffset, EndOffset)}</span>
+        <span key={key++} className="font-bold">
+          {text.slice(BeginOffset, EndOffset)}
+        </span>
       );
 
       lastIndex = EndOffset;
     });
 
     if (lastIndex < text.length - 1) {
-      highlighted.push(<span>{text.slice(lastIndex, text.length)}</span>);
+      highlighted.push(
+        <span key={key++}>{text.slice(lastIndex, text.length)}</span>
+      );
     }
     return highlighted;
   };
 
-  
   return <>{highlights.length ? hightlightText() : text}</>;
 }
 

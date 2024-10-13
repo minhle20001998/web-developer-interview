@@ -1,21 +1,25 @@
-// import queryResult from "../../../../../queryResult.json";
 import HighlightText from "@/components/ui/HighlightText";
 import { SearchResultItem } from "@/types";
 
 interface IProps {
-  items?: SearchResultItem[];
-  total?: number;
+  items: SearchResultItem[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 function SearchResult(props: IProps) {
-  const { items, total } = props;
+  const { items, total, page, pageSize } = props;
+
+  const firstItemIndex = (page - 1) * pageSize + 1;
+  const lastItemIndex = firstItemIndex - 1 + items.length;
 
   return (
     <>
       {items ? (
         <div className="w-4/5">
           <div className="font-semibold my-10">
-            Showing 1-10 of {total} results
+            Showing {firstItemIndex} - {lastItemIndex} of {total} results
           </div>
 
           <div className="flex flex-col gap-12">
@@ -25,21 +29,27 @@ function SearchResult(props: IProps) {
                   className="flex flex-col gap-3"
                   key={searchItem.DocumentId}
                 >
-                  <div className="text-primary-blue font-semibold text-[22px]">
+                  <a
+                    className="text-primary-blue font-semibold text-[22px] hover:underline"
+                    href={searchItem.DocumentURI}
+                  >
                     <HighlightText
                       text={searchItem.DocumentTitle.Text}
                       highlights={searchItem.DocumentTitle.Highlights}
                     />
-                  </div>
+                  </a>
                   <div className="text-base font-normal">
                     <HighlightText
                       text={searchItem.DocumentExcerpt.Text}
                       highlights={searchItem.DocumentExcerpt.Highlights}
                     />
                   </div>
-                  <div className="text-sm font-normal text-[#686868]">
+                  <a
+                    className="text-sm font-normal text-[#686868] break-all"
+                    href={searchItem.DocumentURI}
+                  >
                     {searchItem.DocumentURI}
-                  </div>
+                  </a>
                 </div>
               ))}
           </div>

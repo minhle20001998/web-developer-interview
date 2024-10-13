@@ -19,12 +19,18 @@ function SearchBox(props: IProps) {
   };
 
   return (
-    <form className="flex" onSubmit={handleSubmit}>
+    <form
+      className={
+        "flex rounded-lg border focus-within:border-primary-blue focus-within:rounded-bl-none" 
+      }
+      onSubmit={handleSubmit}
+    >
       <div className="flex-grow relative">
         <input
           type="text"
-          className="w-full h-full border rounded-lg focus:border-primary-blue focus:rounded-b-none focus:outline-none focus:ring-0 pl-4 pr-10"
+          className="w-full h-full rounded-lg  focus:rounded-b-none focus:outline-none focus:ring-0 pl-4 pr-10"
           onChange={(e) => setSearchInput(e.target.value)}
+          aria-label="search-textfield"
         />
         <div className="absolute top-2/4 right-2 -translate-y-2/4">
           <CrossIcon />
@@ -37,7 +43,10 @@ function SearchBox(props: IProps) {
           </div>
         )}
       </div>
-      <button className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-lg">
+      <button
+        className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-lg"
+        aria-label="search-btn"
+      >
         <SearchIcon />
         Search
       </button>
