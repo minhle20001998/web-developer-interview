@@ -1,5 +1,5 @@
 import { Highlight } from "@/types";
-import { highlight } from "@/utils/highlight";
+import { extractHighlightFromDocument } from "@/utils/highlight";
 
 interface IProps {
   text: string;
@@ -11,11 +11,13 @@ function HighlightText(props: IProps) {
 
   return (
     <>
-      {highlight(text, highlights).map(({ text, type }, index) => (
-        <span key={index} className={type === "bold" ? "font-bold" : ""}>
-          {text}
-        </span>
-      ))}
+      {extractHighlightFromDocument(text, highlights).map(
+        ({ text, type }, index) => (
+          <span key={index} className={type === "bold" ? "font-bold" : ""}>
+            {text}
+          </span>
+        )
+      )}
     </>
   );
 }

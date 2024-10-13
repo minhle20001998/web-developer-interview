@@ -5,7 +5,7 @@ interface ITextFormat {
   type: "bold" | "normal";
 }
 
-export const highlight = (
+export const extractHighlightFromDocument = (
   text: string,
   highlights: Highlight[]
 ): ITextFormat[] => {
