@@ -1,28 +1,63 @@
-import { useEffect, useState } from "react";
-import queryResult from "../../../../../queryResult.json";
+import HighlightText from "@/components/ui/HighlightText";
 import { SearchResultItem } from "@/types";
 
-function SearchResult() {
-  const [searchResult, setSearchResult] = useState<SearchResultItem[]>([]);
+interface IProps {
+  items: SearchResultItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
 
-  useEffect(() => {
-    setSearchResult(queryResult.ResultItems);
-  }, []);
+function SearchResult(props: IProps) {
+  const { items, total, page, pageSize } = props;
+
+  const firstItemIndex = (page - 1) * pageSize + 1;
+  const lastItemIndex = firstItemIndex - 1 + items.length;
 
   return (
     <div className="w-4/5">
-      <div className="font-semibold my-10">Showing 1-10 of 300 results</div>
+      {items.length ? (
+        <>
+          <div className="font-semibold my-10">
+            Showing {firstItemIndex} - {lastItemIndex} of {total} results
+          </div>
 
-      <div className="flex flex-col gap-12">
-        {searchResult.length &&
-          searchResult.map((searchItem) => (
-            <div className="flex flex-col gap-3">
-              <div className="text-primary-blue font-semibold text-[22px]">{searchItem.DocumentTitle.Text}</div>
-              <div className="text-base font-normal">{searchItem.DocumentExcerpt.Text}</div>
-              <div className="text-sm font-normal text-[#686868]">{searchItem.DocumentURI}</div>
-            </div>
-          ))}
-      </div>
+          <div className="flex flex-col gap-12">
+            {items &&
+              items.map((searchItem) => (
+                <div
+                  className="flex flex-col gap-3"
+                  key={searchItem.DocumentId}
+                  data-testid={`search-item-${searchItem.DocumentId}`}
+                >
+                  <a
+                    className="text-primary-blue font-semibold text-[22px] hover:underline"
+                    href={searchItem.DocumentURI}
+                  >
+                    <HighlightText
+                      text={searchItem.DocumentTitle.Text}
+                      highlights={searchItem.DocumentTitle.Highlights}
+                    />
+                  </a>
+                  <div className="text-base font-normal">
+                    <HighlightText
+                      text={searchItem.DocumentExcerpt.Text}
+                      highlights={searchItem.DocumentExcerpt.Highlights}
+                    />
+                  </div>
+                  <a
+                    className="text-sm font-normal text-[#686868] break-all"
+                    href={searchItem.DocumentURI}
+                  >
+                    {searchItem.DocumentURI}
+                  </a>
+                </div>
+              ))}
+          </div>
+        </>
+      ) : (
+        <div>No results found!</div>
+      )}
     </div>
   );
 }

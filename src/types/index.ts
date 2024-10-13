@@ -15,3 +15,10 @@ export interface SearchResultItem {
   };
   DocumentURI: string;
 }
+
+export interface SearchResultResponse {
+  Page: number;
+  PageSize: number;
+  TotalNumberOfResults: number;
+  ResultItems: SearchResultItem[];
+}
