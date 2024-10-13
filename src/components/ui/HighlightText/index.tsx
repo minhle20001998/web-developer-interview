@@ -1,4 +1,5 @@
 import { Highlight } from "@/types";
+import { highlight } from "@/utils/highlight";
 
 interface IProps {
   text: string;
@@ -8,35 +9,15 @@ interface IProps {
 function HighlightText(props: IProps) {
   const { text, highlights } = props;
 
-  const hightlightText = () => {
-    const highlighted: JSX.Element[] = [];
-    let lastIndex = 0;
-    let key = 0;
-    highlights.forEach(({ BeginOffset, EndOffset }) => {
-      if (lastIndex < BeginOffset) {
-        highlighted.push(
-          <span key={key++}>{text.slice(lastIndex, BeginOffset)}</span>
-        );
-      }
-
-      highlighted.push(
-        <span key={key++} className="font-bold">
-          {text.slice(BeginOffset, EndOffset)}
+  return (
+    <>
+      {highlight(text, highlights).map(({ text, type }, index) => (
+        <span key={index} className={type === "bold" ? "font-bold" : ""}>
+          {text}
         </span>
-      );
-
-      lastIndex = EndOffset;
-    });
-
-    if (lastIndex < text.length - 1) {
-      highlighted.push(
-        <span key={key++}>{text.slice(lastIndex, text.length)}</span>
-      );
-    }
-    return highlighted;
-  };
-
-  return <>{highlights.length ? hightlightText() : text}</>;
+      ))}
+    </>
+  );
 }
 
 export default HighlightText;

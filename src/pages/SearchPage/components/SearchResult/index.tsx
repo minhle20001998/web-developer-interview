@@ -15,9 +15,9 @@ function SearchResult(props: IProps) {
   const lastItemIndex = firstItemIndex - 1 + items.length;
 
   return (
-    <>
-      {items ? (
-        <div className="w-4/5">
+    <div className="w-4/5">
+      {items.length ? (
+        <>
           <div className="font-semibold my-10">
             Showing {firstItemIndex} - {lastItemIndex} of {total} results
           </div>
@@ -28,6 +28,7 @@ function SearchResult(props: IProps) {
                 <div
                   className="flex flex-col gap-3"
                   key={searchItem.DocumentId}
+                  data-testid={`search-item-${searchItem.DocumentId}`}
                 >
                   <a
                     className="text-primary-blue font-semibold text-[22px] hover:underline"
@@ -53,11 +54,11 @@ function SearchResult(props: IProps) {
                 </div>
               ))}
           </div>
-        </div>
+        </>
       ) : (
-        <div>Loading...</div>
+        <div>No results found!</div>
       )}
-    </>
+    </div>
   );
 }
 
