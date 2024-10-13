@@ -17,6 +17,7 @@ function SearchBox(props: IProps) {
     useState<number>(-1);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] =
     useState<number>();
+  const [isClearBtnVisible, setIsClearBtnVisible] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     setIsDropdownOpen(false);
@@ -45,7 +46,13 @@ function SearchBox(props: IProps) {
 
   const handleInputChange = (newInput: string) => {
     setSearchInput(newInput);
-    if (newInput && newInput.length > 2) {
+    if (newInput.length > 0) {
+      setIsClearBtnVisible(true);
+    } else {
+      setIsClearBtnVisible(false);
+    }
+
+    if (newInput.length > 2) {
       debouncedInput(newInput);
     } else {
       debouncedInput.cancel();
@@ -101,9 +108,14 @@ function SearchBox(props: IProps) {
           onKeyDown={handleSearchFieldOnKeyDown}
           aria-label="search-textfield"
         />
-        <div className="absolute top-2/4 right-2 -translate-y-2/4">
+        <button
+          className={
+            "absolute top-2/4 right-2 -translate-y-2/4" +
+            (isClearBtnVisible ? "" : " hidden")
+          }
+        >
           <CrossIcon />
-        </div>
+        </button>
         {suggestions && isDropdownOpen && (
           <ul className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b translate-z bg-white flex flex-col -z-10">
             {suggestions.map((suggestion, index) => (
