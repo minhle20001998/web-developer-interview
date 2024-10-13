@@ -1,6 +1,6 @@
 import SearchIcon from "@/components/icons/SearchIcon";
 import CrossIcon from "@/components/icons/CrossIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { fetchSearchSuggestion } from "@/services/search";
 import debounce from "lodash/debounce";
 
@@ -11,10 +11,15 @@ interface IProps {
 function SearchBox(props: IProps) {
   const { onSearch } = props;
   const [suggestions, setSuggestions] = useState<string[]>();
-  const [searchInput, setSearchInput] = useState<string>();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] =
+    useState<number>(-1);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] =
+    useState<number>();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    setIsDropdownOpen(false);
     e.preventDefault();
     if (searchInput) {
       onSearch(searchInput);
@@ -38,15 +43,43 @@ function SearchBox(props: IProps) {
     []
   );
 
-  useEffect(() => {
-    if (searchInput && searchInput?.length > 2) {
-      debouncedInput(searchInput);
+  const handleInputChange = (newInput: string) => {
+    setSearchInput(newInput);
+    if (newInput && newInput.length > 2) {
+      debouncedInput(newInput);
     } else {
       debouncedInput.cancel();
-      if (suggestions?.length) setSuggestions([]);
-      if (isDropdownOpen) setIsDropdownOpen(false);
+      setSuggestions([]);
+      setIsDropdownOpen(false);
     }
-  }, [searchInput, debouncedInput, suggestions?.length, isDropdownOpen]);
+  };
+
+  const changeActiveSuggestionIndex = (newIndex: number) => {
+    if (suggestions && suggestions.length) {
+      if (newIndex >= 0 && newIndex < suggestions.length) {
+        setActiveSuggestionIndex(newIndex);
+      }
+    }
+  };
+
+  const handleSearchFieldOnKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "ArrowDown") {
+      console.log("activeIndex ", activeSuggestionIndex);
+      changeActiveSuggestionIndex(activeSuggestionIndex + 1);
+    }
+
+    if (e.key === "ArrowUp") {
+      changeActiveSuggestionIndex(activeSuggestionIndex - 1);
+    }
+  };
+
+  const selectSuggestion = (suggestionIndex: number) => {
+    setSearchInput(suggestions?.[suggestionIndex] || "");
+    setSelectedSuggestionIndex(suggestionIndex);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <form
@@ -63,22 +96,33 @@ function SearchBox(props: IProps) {
             "w-full h-full rounded-lg focus:outline-none focus:ring-0 pl-4 pr-10" +
             (isDropdownOpen ? " rounded-b-none" : "")
           }
-          onChange={(e) => setSearchInput(e.target.value)}
+          value={searchInput}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleSearchFieldOnKeyDown}
           aria-label="search-textfield"
         />
         <div className="absolute top-2/4 right-2 -translate-y-2/4">
           <CrossIcon />
         </div>
         {suggestions && isDropdownOpen && (
-          <div className="absolute w-full p-5 rounded-b-lg shadow-general border-x border-b translate-z bg-white flex flex-col gap-[10px] -z-10">
-            {suggestions.map((suggestion) => (
-              <div>{suggestion}</div>
+          <ul className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b translate-z bg-white flex flex-col -z-10">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                className={
+                  "cursor-default p-2 px-5 rounded-sm" +
+                  (activeSuggestionIndex === index ? " bg-slate-100" : "")
+                }
+                onClick={() => selectSuggestion(index)}
+              >
+                {suggestion}
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
       <button
-        className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-lg"
+        className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-md"
         aria-label="search-btn"
       >
         <SearchIcon />
