@@ -1,21 +1,30 @@
-import SearchIcon from "@components/icons/SearchIcon";
+import SearchIcon from "@/components/icons/SearchIcon";
 import CrossIcon from "@/components/icons/CrossIcon";
-import { useEffect, useState } from "react";
-import suggestion from "../../../../../suggestion.json";
+import { useState } from "react";
 
-function SearchBox() {
-  const [suggestions, setSuggestions] = useState<string[]>();
+interface IProps {
+  onSearch: (keyword: string) => void;
+}
 
-  useEffect(() => {
-    setSuggestions(suggestion.suggestions);
-  }, []);
+function SearchBox(props: IProps) {
+  const { onSearch } = props;
+  const [suggestions] = useState<string[]>();
+  const [searchInput, setSearchInput] = useState<string>();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchInput) {
+      onSearch(searchInput);
+    }
+  };
 
   return (
-    <div className="flex">
+    <form className="flex" onSubmit={handleSubmit}>
       <div className="flex-grow relative">
         <input
           type="text"
           className="w-full h-full border rounded-lg focus:border-primary-blue focus:rounded-b-none focus:outline-none focus:ring-0 pl-4 pr-10"
+          onChange={(e) => setSearchInput(e.target.value)}
         />
         <div className="absolute top-2/4 right-2 -translate-y-2/4">
           <CrossIcon />
@@ -32,7 +41,7 @@ function SearchBox() {
         <SearchIcon />
         Search
       </button>
-    </div>
+    </form>
   );
 }
 
