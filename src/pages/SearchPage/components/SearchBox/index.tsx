@@ -15,13 +15,12 @@ function SearchBox(props: IProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] =
     useState<number>(-1);
-  const [selectedSuggestionIndex, setSelectedSuggestionIndex] =
+  const [_selectedSuggestionIndex, setSelectedSuggestionIndex] =
     useState<number>();
   const [isClearBtnVisible, setIsClearBtnVisible] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = () => {
     setIsDropdownOpen(false);
-    e.preventDefault();
     if (searchInput) {
       onSearch(searchInput);
     }
@@ -72,6 +71,10 @@ function SearchBox(props: IProps) {
   const handleSearchFieldOnKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+
     if (e.key === "ArrowDown") {
       console.log("activeIndex ", activeSuggestionIndex);
       changeActiveSuggestionIndex(activeSuggestionIndex + 1);
@@ -88,13 +91,18 @@ function SearchBox(props: IProps) {
     setIsDropdownOpen(false);
   };
 
+  const onClickClearBtn = () => {
+    setIsDropdownOpen(false);
+    setSearchInput("");
+    setIsClearBtnVisible(false);
+  };
+
   return (
-    <form
+    <div
       className={
         "flex rounded-lg border-2 focus-within:border-primary-blue" +
         (isDropdownOpen ? " rounded-bl-none" : "")
       }
-      onSubmit={handleSubmit}
     >
       <div className="flex-grow relative">
         <input
@@ -113,6 +121,7 @@ function SearchBox(props: IProps) {
             "absolute top-2/4 right-2 -translate-y-2/4" +
             (isClearBtnVisible ? "" : " hidden")
           }
+          onClick={onClickClearBtn}
         >
           <CrossIcon />
         </button>
@@ -134,13 +143,15 @@ function SearchBox(props: IProps) {
         )}
       </div>
       <button
+        type="submit"
         className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-md"
         aria-label="search-btn"
+        onClick={handleSubmit}
       >
         <SearchIcon />
         Search
       </button>
-    </form>
+    </div>
   );
 }
 
