@@ -22,3 +22,8 @@ export interface SearchResultResponse {
   TotalNumberOfResults: number;
   ResultItems: SearchResultItem[];
 }
+
+export interface SearchSuggestionResponse {
+  stemmedQueryTerm: string;
+  suggestions: string[];
+}
