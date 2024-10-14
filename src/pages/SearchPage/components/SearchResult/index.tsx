@@ -32,7 +32,7 @@ function SearchResult(props: IProps) {
                   data-testid={`search-item-${searchItem.DocumentId}`}
                 >
                   <a
-                    className="text-primary-blue font-semibold text-[22px] hover:underline"
+                    className="text-primary-blue font-semibold text-[22px] hover:underline visited:text-purple-700"
                     href={searchItem.DocumentURI}
                   >
                     <HighlightText

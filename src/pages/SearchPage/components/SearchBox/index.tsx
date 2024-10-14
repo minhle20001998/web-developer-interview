@@ -1,27 +1,37 @@
 import SearchIcon from "@/components/icons/SearchIcon";
 import CrossIcon from "@/components/icons/CrossIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchSearchSuggestion } from "@/services/search";
 import debounce from "lodash/debounce";
 import HighlightText from "@/components/ui/HighlightText";
 import { extractHighlightByKeyword } from "@/utils/highlight";
 
-interface IProps {
+interface ISearchBoxProps {
   onSearch: (keyword: string) => void;
 }
 
-function SearchBox(props: IProps) {
+function SearchBox(props: ISearchBoxProps) {
   const { onSearch } = props;
+
   const [suggestions, setSuggestions] = useState<string[]>();
-  const [searchInput, setSearchInput] = useState<string>("");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] =
     useState<number>(-1);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = (searchInput: string) => {
+  const getInputVal = () => inputRef?.current?.value || "";
+
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      setActiveSuggestionIndex(-1);
+    }
+  }, [isDropdownOpen]);
+
+  const handleSubmit = () => {
     setIsDropdownOpen(false);
-    if (searchInput) {
-      onSearch(searchInput);
+    const inputVal = getInputVal();
+    if (inputVal) {
+      onSearch(inputVal);
     }
   };
 
@@ -43,8 +53,6 @@ function SearchBox(props: IProps) {
   );
 
   const handleInputChange = (newInput: string) => {
-    setSearchInput(newInput);
-
     if (newInput.length > 2) {
       debouncedInput(newInput);
     } else {
@@ -57,51 +65,47 @@ function SearchBox(props: IProps) {
   const handleSearchFieldOnKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    const changeActiveSuggestionIndex = (newIndex: number) => {
-      if (suggestions && suggestions.length) {
-        if (newIndex >= 0 && newIndex < suggestions.length) {
-          setActiveSuggestionIndex(newIndex);
-        }
-      }
-    };
-
     switch (e.key) {
       case "Enter":
         if (activeSuggestionIndex >= 0) {
-          return selectSuggestion(activeSuggestionIndex);
+          return selectSuggestion(suggestions?.[activeSuggestionIndex] || "");
         }
-        return handleSubmit(searchInput);
+        return handleSubmit();
       case "ArrowDown":
         e.preventDefault();
-        return changeActiveSuggestionIndex(activeSuggestionIndex + 1);
+        return setActiveSuggestionIndex((prev) =>
+          prev + 1 < (suggestions?.length || 0) ? prev + 1 : prev
+        );
       case "ArrowUp":
         e.preventDefault();
-        return changeActiveSuggestionIndex(activeSuggestionIndex - 1);
+        return setActiveSuggestionIndex((prev) =>
+          prev - 1 >= 0 ? prev - 1 : prev
+        );
     }
   };
 
-  useEffect(() => {
-    if (!isDropdownOpen) {
-      setActiveSuggestionIndex(-1);
+  const selectSuggestion = (suggestion: string) => {
+    if (inputRef.current) {
+      inputRef.current.value = suggestion;
     }
-  }, [isDropdownOpen]);
-
-  const selectSuggestion = (suggestionIndex: number) => {
-    const selectKeyword = suggestions?.[suggestionIndex] || "";
-    setSearchInput(selectKeyword);
-    handleSubmit(selectKeyword);
+    handleSubmit();
   };
 
   const onClickClearBtn = () => {
+    inputRef?.current?.focus();
     setIsDropdownOpen(false);
-    setSearchInput("");
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   };
+
+  const shouldDropdownBeDisplayed = isDropdownOpen && !!suggestions?.length;
 
   return (
     <div
       className={
         "flex rounded-lg border-2 focus-within:border-primary-blue" +
-        (isDropdownOpen && suggestions?.length ? " rounded-bl-none" : "")
+        (shouldDropdownBeDisplayed ? " rounded-bl-none" : "")
       }
     >
       <div className="flex-grow relative">
@@ -109,24 +113,24 @@ function SearchBox(props: IProps) {
           type="text"
           className={
             "w-full h-full rounded-lg focus:outline-none focus:ring-0 pl-4 pr-10" +
-            (isDropdownOpen && suggestions?.length ? " rounded-b-none" : "")
+            (shouldDropdownBeDisplayed ? " rounded-b-none" : "")
           }
-          value={searchInput}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleSearchFieldOnKeyDown}
           onFocus={() => setIsDropdownOpen(true)}
+          ref={inputRef}
           aria-label="search-textfield"
         />
-        <button
-          className={
-            "absolute top-2/4 right-2 -translate-y-2/4" +
-            (searchInput.length ? "" : " hidden")
-          }
-          onClick={onClickClearBtn}
-        >
-          <CrossIcon />
-        </button>
-        {!!suggestions?.length && isDropdownOpen && (
+        {!!getInputVal().length && (
+          <button
+            className="absolute top-2/4 right-2 -translate-y-2/4"
+            aria-label="search-clear-btn"
+            onClick={onClickClearBtn}
+          >
+            <CrossIcon />
+          </button>
+        )}
+        {shouldDropdownBeDisplayed && (
           <ul
             className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b bg-white flex flex-col translate-y-1"
             aria-label="suggestion-dropdown"
@@ -141,12 +145,12 @@ function SearchBox(props: IProps) {
                 onMouseEnter={() => {
                   setActiveSuggestionIndex(index);
                 }}
-                onClick={() => selectSuggestion(index)}
+                onClick={() => selectSuggestion(suggestion)}
               >
                 <HighlightText
                   textFormats={extractHighlightByKeyword(
                     suggestion,
-                    searchInput
+                    getInputVal()
                   )}
                 />
               </li>
@@ -155,10 +159,9 @@ function SearchBox(props: IProps) {
         )}
       </div>
       <button
-        type="submit"
         className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-md"
         aria-label="search-btn"
-        onClick={() => handleSubmit(searchInput)}
+        onClick={() => handleSubmit()}
       >
         <SearchIcon />
         <div className="hidden sm:block">Search</div>
