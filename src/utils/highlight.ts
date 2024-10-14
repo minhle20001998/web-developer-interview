@@ -40,45 +40,41 @@ export const extractHighlightFromDocument = (
   return result;
 };
 
-export const extractHighlightFromKeyword = (
+export const extractHighlightByKeyword = (
   text: string,
   keyword: string
 ): ITextFormat[] => {
   const trimmedKeyword = keyword.trim();
-
   const result: ITextFormat[] = [];
 
-  let lastIndex = 0;
-  for (let i = 0; i < text.length; i++) {
-    let matchKeyword = true;
+  let index = 0;
 
-    for (let j = 0; j < trimmedKeyword.length; j++) {
-      if (text[i + j] !== trimmedKeyword[j]) {
-        matchKeyword = false;
-        break;
-      }
-    }
+  while (index < text.length) {
+    const indexOfKeyword = text.indexOf(trimmedKeyword, index);
 
-    if (matchKeyword) {
-      result.push(
-        {
-          text: text.slice(lastIndex, i),
+    if (indexOfKeyword === -1) {
+      if (index < text.length) {
+        result.push({
+          text: text.slice(index),
           type: "normal",
-        },
-        {
-          text: text.slice(i, i + trimmedKeyword.length),
-          type: "bold",
-        }
-      );
-      lastIndex = i + trimmedKeyword.length;
+        });
+      }
+      break;
     }
-  }
 
-  if (lastIndex < text.length) {
+    if (index < indexOfKeyword) {
+      result.push({
+        text: text.slice(index, indexOfKeyword),
+        type: "normal",
+      });
+    }
+
     result.push({
-      text: text.slice(lastIndex, text.length),
-      type: "normal",
+      text: text.slice(indexOfKeyword, indexOfKeyword + trimmedKeyword.length),
+      type: "bold",
     });
+
+    index = indexOfKeyword + trimmedKeyword.length;
   }
 
   return result;

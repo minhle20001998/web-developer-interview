@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchSearchSuggestion } from "@/services/search";
 import debounce from "lodash/debounce";
 import HighlightText from "@/components/ui/HighlightText";
-import { extractHighlightFromKeyword } from "@/utils/highlight";
+import { extractHighlightByKeyword } from "@/utils/highlight";
 
 interface IProps {
   onSearch: (keyword: string) => void;
@@ -18,7 +18,7 @@ function SearchBox(props: IProps) {
   const [activeSuggestionIndex, setActiveSuggestionIndex] =
     useState<number>(-1);
 
-  const handleSubmit = () => {
+  const handleSubmit = (searchInput: string) => {
     setIsDropdownOpen(false);
     if (searchInput) {
       onSearch(searchInput);
@@ -68,9 +68,9 @@ function SearchBox(props: IProps) {
     switch (e.key) {
       case "Enter":
         if (activeSuggestionIndex >= 0) {
-          setSearchInput(suggestions?.[activeSuggestionIndex] || "");
+          return selectSuggestion(activeSuggestionIndex);
         }
-        return handleSubmit();
+        return handleSubmit(searchInput);
       case "ArrowDown":
         e.preventDefault();
         return changeActiveSuggestionIndex(activeSuggestionIndex + 1);
@@ -87,8 +87,9 @@ function SearchBox(props: IProps) {
   }, [isDropdownOpen]);
 
   const selectSuggestion = (suggestionIndex: number) => {
-    setSearchInput(suggestions?.[suggestionIndex] || "");
-    handleSubmit();
+    const selectKeyword = suggestions?.[suggestionIndex] || "";
+    setSearchInput(selectKeyword);
+    handleSubmit(selectKeyword);
   };
 
   const onClickClearBtn = () => {
@@ -100,7 +101,7 @@ function SearchBox(props: IProps) {
     <div
       className={
         "flex rounded-lg border-2 focus-within:border-primary-blue" +
-        (isDropdownOpen ? " rounded-bl-none" : "")
+        (isDropdownOpen && suggestions?.length ? " rounded-bl-none" : "")
       }
     >
       <div className="flex-grow relative">
@@ -108,7 +109,7 @@ function SearchBox(props: IProps) {
           type="text"
           className={
             "w-full h-full rounded-lg focus:outline-none focus:ring-0 pl-4 pr-10" +
-            (isDropdownOpen ? " rounded-b-none" : "")
+            (isDropdownOpen && suggestions?.length ? " rounded-b-none" : "")
           }
           value={searchInput}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -125,7 +126,7 @@ function SearchBox(props: IProps) {
         >
           <CrossIcon />
         </button>
-        {suggestions && isDropdownOpen && (
+        {!!suggestions?.length && isDropdownOpen && (
           <ul
             className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b bg-white flex flex-col translate-y-1"
             aria-label="suggestion-dropdown"
@@ -137,10 +138,13 @@ function SearchBox(props: IProps) {
                   "cursor-default p-2 px-5 rounded-sm" +
                   (activeSuggestionIndex === index ? " bg-slate-100" : "")
                 }
+                onMouseEnter={() => {
+                  setActiveSuggestionIndex(index);
+                }}
                 onClick={() => selectSuggestion(index)}
               >
                 <HighlightText
-                  textFormats={extractHighlightFromKeyword(
+                  textFormats={extractHighlightByKeyword(
                     suggestion,
                     searchInput
                   )}
@@ -154,11 +158,9 @@ function SearchBox(props: IProps) {
         type="submit"
         className="bg-primary-blue flex justify-center items-center gap-2 text-white py-2 px-5 rounded-md"
         aria-label="search-btn"
-        onClick={handleSubmit}
+        onClick={() => handleSubmit(searchInput)}
       >
-        <div>
-          <SearchIcon />
-        </div>
+        <SearchIcon />
         <div className="hidden sm:block">Search</div>
       </button>
     </div>

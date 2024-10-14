@@ -61,7 +61,7 @@ function SearchResult(props: IProps) {
           </div>
         </>
       ) : (
-        <div>No results found!</div>
+        <div className="my-10">No results found!</div>
       )}
     </div>
   );
