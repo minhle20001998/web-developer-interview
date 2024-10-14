@@ -1,8 +1,10 @@
 import SearchIcon from "@/components/icons/SearchIcon";
 import CrossIcon from "@/components/icons/CrossIcon";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchSearchSuggestion } from "@/services/search";
 import debounce from "lodash/debounce";
+import HighlightText from "@/components/ui/HighlightText";
+import { extractHighlightFromKeyword } from "@/utils/highlight";
 
 interface IProps {
   onSearch: (keyword: string) => void;
@@ -15,9 +17,6 @@ function SearchBox(props: IProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] =
     useState<number>(-1);
-  const [_selectedSuggestionIndex, setSelectedSuggestionIndex] =
-    useState<number>();
-  const [isClearBtnVisible, setIsClearBtnVisible] = useState<boolean>(false);
 
   const handleSubmit = () => {
     setIsDropdownOpen(false);
@@ -45,11 +44,6 @@ function SearchBox(props: IProps) {
 
   const handleInputChange = (newInput: string) => {
     setSearchInput(newInput);
-    if (newInput.length > 0) {
-      setIsClearBtnVisible(true);
-    } else {
-      setIsClearBtnVisible(false);
-    }
 
     if (newInput.length > 2) {
       debouncedInput(newInput);
@@ -60,41 +54,46 @@ function SearchBox(props: IProps) {
     }
   };
 
-  const changeActiveSuggestionIndex = (newIndex: number) => {
-    if (suggestions && suggestions.length) {
-      if (newIndex >= 0 && newIndex < suggestions.length) {
-        setActiveSuggestionIndex(newIndex);
-      }
-    }
-  };
-
   const handleSearchFieldOnKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
+    const changeActiveSuggestionIndex = (newIndex: number) => {
+      if (suggestions && suggestions.length) {
+        if (newIndex >= 0 && newIndex < suggestions.length) {
+          setActiveSuggestionIndex(newIndex);
+        }
+      }
+    };
 
-    if (e.key === "ArrowDown") {
-      console.log("activeIndex ", activeSuggestionIndex);
-      changeActiveSuggestionIndex(activeSuggestionIndex + 1);
-    }
-
-    if (e.key === "ArrowUp") {
-      changeActiveSuggestionIndex(activeSuggestionIndex - 1);
+    switch (e.key) {
+      case "Enter":
+        if (activeSuggestionIndex >= 0) {
+          setSearchInput(suggestions?.[activeSuggestionIndex] || "");
+        }
+        return handleSubmit();
+      case "ArrowDown":
+        e.preventDefault();
+        return changeActiveSuggestionIndex(activeSuggestionIndex + 1);
+      case "ArrowUp":
+        e.preventDefault();
+        return changeActiveSuggestionIndex(activeSuggestionIndex - 1);
     }
   };
 
+  useEffect(() => {
+    if (!isDropdownOpen) {
+      setActiveSuggestionIndex(-1);
+    }
+  }, [isDropdownOpen]);
+
   const selectSuggestion = (suggestionIndex: number) => {
     setSearchInput(suggestions?.[suggestionIndex] || "");
-    setSelectedSuggestionIndex(suggestionIndex);
-    setIsDropdownOpen(false);
+    handleSubmit();
   };
 
   const onClickClearBtn = () => {
     setIsDropdownOpen(false);
     setSearchInput("");
-    setIsClearBtnVisible(false);
   };
 
   return (
@@ -114,19 +113,23 @@ function SearchBox(props: IProps) {
           value={searchInput}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleSearchFieldOnKeyDown}
+          onFocus={() => setIsDropdownOpen(true)}
           aria-label="search-textfield"
         />
         <button
           className={
             "absolute top-2/4 right-2 -translate-y-2/4" +
-            (isClearBtnVisible ? "" : " hidden")
+            (searchInput.length ? "" : " hidden")
           }
           onClick={onClickClearBtn}
         >
           <CrossIcon />
         </button>
         {suggestions && isDropdownOpen && (
-          <ul className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b translate-z bg-white flex flex-col -z-10">
+          <ul
+            className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b bg-white flex flex-col translate-y-1"
+            aria-label="suggestion-dropdown"
+          >
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
@@ -136,7 +139,12 @@ function SearchBox(props: IProps) {
                 }
                 onClick={() => selectSuggestion(index)}
               >
-                {suggestion}
+                <HighlightText
+                  textFormats={extractHighlightFromKeyword(
+                    suggestion,
+                    searchInput
+                  )}
+                />
               </li>
             ))}
           </ul>
@@ -148,8 +156,10 @@ function SearchBox(props: IProps) {
         aria-label="search-btn"
         onClick={handleSubmit}
       >
-        <SearchIcon />
-        Search
+        <div>
+          <SearchIcon />
+        </div>
+        <div className="hidden sm:block">Search</div>
       </button>
     </div>
   );

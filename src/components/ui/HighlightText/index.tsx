@@ -1,23 +1,19 @@
-import { Highlight } from "@/types";
-import { extractHighlightFromDocument } from "@/utils/highlight";
+import { ITextFormat } from "@/utils/highlight";
 
 interface IProps {
-  text: string;
-  highlights: Highlight[];
+  textFormats: ITextFormat[];
 }
 
 function HighlightText(props: IProps) {
-  const { text, highlights } = props;
+  const { textFormats } = props;
 
   return (
     <>
-      {extractHighlightFromDocument(text, highlights).map(
-        ({ text, type }, index) => (
-          <span key={index} className={type === "bold" ? "font-bold" : ""}>
-            {text}
-          </span>
-        )
-      )}
+      {textFormats.map(({ text, type }, index) => (
+        <span key={index} className={type === "bold" ? "font-bold" : ""}>
+          {text}
+        </span>
+      ))}
     </>
   );
 }

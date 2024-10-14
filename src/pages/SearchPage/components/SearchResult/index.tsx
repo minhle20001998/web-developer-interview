@@ -1,5 +1,6 @@
 import HighlightText from "@/components/ui/HighlightText";
 import { SearchResultItem } from "@/types";
+import { extractHighlightFromDocument } from "@/utils/highlight";
 
 interface IProps {
   items: SearchResultItem[];
@@ -35,14 +36,18 @@ function SearchResult(props: IProps) {
                     href={searchItem.DocumentURI}
                   >
                     <HighlightText
-                      text={searchItem.DocumentTitle.Text}
-                      highlights={searchItem.DocumentTitle.Highlights}
+                      textFormats={extractHighlightFromDocument(
+                        searchItem.DocumentTitle.Text,
+                        searchItem.DocumentTitle.Highlights
+                      )}
                     />
                   </a>
                   <div className="text-base font-normal">
                     <HighlightText
-                      text={searchItem.DocumentExcerpt.Text}
-                      highlights={searchItem.DocumentExcerpt.Highlights}
+                      textFormats={extractHighlightFromDocument(
+                        searchItem.DocumentExcerpt.Text,
+                        searchItem.DocumentExcerpt.Highlights
+                      )}
                     />
                   </div>
                   <a
