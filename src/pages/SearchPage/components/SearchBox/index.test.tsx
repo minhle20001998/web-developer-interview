@@ -171,22 +171,10 @@ describe("SearchBox", () => {
       const suggestionDropdown = await screen.findByRole("list");
 
       await act(async () => {
-        await userEvent.type(
-          searchInputElement,
-          "{arrowdown}"
-        );
-        await userEvent.type(
-          searchInputElement,
-          "{arrowdown}"
-        );
-        await userEvent.type(
-          searchInputElement,
-          "{arrowup}"
-        );
-        await userEvent.type(
-          searchInputElement,
-          "{enter}"
-        );
+        await userEvent.type(searchInputElement, "{arrowdown}");
+        await userEvent.type(searchInputElement, "{arrowdown}");
+        await userEvent.type(searchInputElement, "{arrowup}");
+        await userEvent.type(searchInputElement, "{enter}");
       });
 
       await waitFor(() => {

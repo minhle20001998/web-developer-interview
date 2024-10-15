@@ -27,6 +27,10 @@ function SearchBox(props: ISearchBoxProps) {
     }
   }, [isDropdownOpen]);
 
+  /**
+   * Function is invoked when the search button is clicked or the enter key is pressed.
+   * Dropdown will be closed and perform search with the input value.
+   */
   const handleSubmit = () => {
     setIsDropdownOpen(false);
     const inputVal = getInputVal();
@@ -35,6 +39,10 @@ function SearchBox(props: ISearchBoxProps) {
     }
   };
 
+  /**
+   * Debounce the input change event to prevent frequent API calls to fetch search suggestion. Delay of 300ms.
+   * Open suggestion dropdown if there is any suggestion returned from the API.
+   */
   const debouncedInput = useMemo(
     () =>
       debounce((searchInput) => {
@@ -52,6 +60,10 @@ function SearchBox(props: ISearchBoxProps) {
     []
   );
 
+  /**
+   * Handle onChange event of textfield input. Perform debounced API call to fetch search suggestion when input.length > 2.
+   * @param newInput
+   */
   const handleInputChange = (newInput: string) => {
     if (newInput.length > 2) {
       debouncedInput(newInput);
@@ -62,6 +74,15 @@ function SearchBox(props: ISearchBoxProps) {
     }
   };
 
+  /**
+   * Handle onKeyDown event of textfield input.
+   * When user presses up or down error, active suggestion index will be updated.
+   * When user presses enter, it will either:
+   * - Select the active suggestion (set input textfield to the active suggestion and then perform search) if user is navigating through the dropdown.
+   * - Perform search with the current input value if user is not navigating through the dropdown.
+   * @param e
+   * @returns
+   */
   const handleSearchFieldOnKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
@@ -84,6 +105,11 @@ function SearchBox(props: ISearchBoxProps) {
     }
   };
 
+  /**
+   * When user clicks a suggestion or presses enter on an active suggestion, invoke this method.
+   * It will set the input value to the selected suggestion and perform search.
+   * @param suggestion
+   */
   const selectSuggestion = (suggestion: string) => {
     if (inputRef.current) {
       inputRef.current.value = suggestion;

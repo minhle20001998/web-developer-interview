@@ -1,7 +1,7 @@
-import { SearchResultResponse, SearchSuggestionResponse } from "@/types";
+import { ISearchResultResponse, ISearchSuggestionResponse } from "@/types";
 
 export const filterSearchResult = (
-  result: SearchResultResponse,
+  result: ISearchResultResponse,
   keyword: string
 ) => {
   result.ResultItems = result.ResultItems.filter((resultItem) =>
@@ -12,7 +12,7 @@ export const filterSearchResult = (
 };
 
 export const filterSearchSuggestion = (
-  result: SearchSuggestionResponse,
+  result: ISearchSuggestionResponse,
   keyword: string
 ) => {
   result.suggestions = result.suggestions.filter((suggestion) =>

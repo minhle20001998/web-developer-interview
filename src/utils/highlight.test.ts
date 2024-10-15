@@ -1,4 +1,4 @@
-import { Highlight } from "@/types";
+import { IHighlight } from "@/types";
 import {
   extractHighlightByKeyword,
   extractHighlightFromDocument,
@@ -9,7 +9,7 @@ describe("extractHighlightFromDocument", () => {
     // Arrange
     const text =
       "HPB Introduces BMI-for-Age Charts to Monitor Physical Growth and Development in Children and Youth";
-    const noHighlights: Highlight[] = [];
+    const noHighlights: IHighlight[] = [];
 
     // Act
     const textArrs = extractHighlightFromDocument(text, noHighlights);
@@ -23,7 +23,7 @@ describe("extractHighlightFromDocument", () => {
   test("should return an array of subtext with type=normal and type=bold if there is a highlight offset", () => {
     // Arrange
     const text = "Choose a Child Care Centre";
-    const highlights: Highlight[] = [
+    const highlights: IHighlight[] = [
       {
         BeginOffset: 9,
         EndOffset: 14,

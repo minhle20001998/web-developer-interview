@@ -1,29 +1,29 @@
-export interface Highlight {
+export interface IHighlight {
   BeginOffset: number;
   EndOffset: number;
 }
 
-export interface SearchResultItem {
+export interface ISearchResultItem {
   DocumentId: string;
   DocumentTitle: {
     Text: string;
-    Highlights: Highlight[];
+    Highlights: IHighlight[];
   };
   DocumentExcerpt: {
     Text: string;
-    Highlights: Highlight[];
+    Highlights: IHighlight[];
   };
   DocumentURI: string;
 }
 
-export interface SearchResultResponse {
+export interface ISearchResultResponse {
   Page: number;
   PageSize: number;
   TotalNumberOfResults: number;
-  ResultItems: SearchResultItem[];
+  ResultItems: ISearchResultItem[];
 }
 
-export interface SearchSuggestionResponse {
+export interface ISearchSuggestionResponse {
   stemmedQueryTerm: string;
   suggestions: string[];
 }

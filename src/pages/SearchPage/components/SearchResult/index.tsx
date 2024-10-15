@@ -1,9 +1,9 @@
 import HighlightText from "@/components/ui/HighlightText";
-import { SearchResultItem } from "@/types";
+import { ISearchResultItem } from "@/types";
 import { extractHighlightFromDocument } from "@/utils/highlight";
 
 interface IProps {
-  items: SearchResultItem[];
+  items: ISearchResultItem[];
   total: number;
   page: number;
   pageSize: number;

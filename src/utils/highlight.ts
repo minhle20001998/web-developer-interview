@@ -1,13 +1,20 @@
-import { Highlight } from "@/types";
+import { IHighlight } from "@/types";
 
 export interface ITextFormat {
   text: string;
   type: "bold" | "normal";
 }
 
+/**
+ * Given a text string and an array of highlight offsets, the function will identify highlighted text
+ * within the text string. Split the text string into an array of substrings, each indicating text format "normal" or "bold"
+ * @param text
+ * @param highlights
+ * @returns
+ */
 export const extractHighlightFromDocument = (
   text: string,
-  highlights: Highlight[]
+  highlights: IHighlight[]
 ): ITextFormat[] => {
   if (!highlights || highlights.length === 0) return [{ text, type: "normal" }];
 
@@ -40,6 +47,13 @@ export const extractHighlightFromDocument = (
   return result;
 };
 
+/**
+ * Given a text string and a keyword (search term), the function will identify substrings of text that match the keyword, which will then be highlighted.
+ * Split the text string into an array of substrings, each indicating text format "normal" or "bold"
+ * @param text
+ * @param keyword
+ * @returns
+ */
 export const extractHighlightByKeyword = (
   text: string,
   keyword: string

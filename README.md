@@ -5,6 +5,7 @@
 - [Installation](#installation)
 - [Run the App](#run-the-app)
 - [Run Tests](#run-tests)
+- [Additional Implementation Details](#implementation-details)
 
 ## Installation
 
@@ -27,16 +28,25 @@ To install and run this project on your local machine, follow these steps:
 
 1. Run command
 
-```bash
+   ```bash
    npm run dev
-```
+   ```
 
 2. Open your browser and go to http://localhost:5173
 
 ## Run Tests
 
-```bash
-npm run test
-```
+   ```bash
+   npm run test
+   ```
 
-Go to coverage folder to see the test coverage report
+You can also go to coverage folder to see the test coverage report
+
+## Additional Implementation Details
+
+### Frontend Mock Filtering and Search
+
+Since the API endpoints in this project return static responses, the filtering and search functionalities are implemented entirely on the frontend. When a user performs a search or applies filters, the fetched static data is filtered based on the keyword directly in the client.
+
+- Return search results with the search term in the title of the items, case-insensitive.
+- Return search suggestions with the search term in the suggestion content, case-sensitive
