@@ -7,6 +7,7 @@ describe("SearchResult", () => {
   const total = mockQueryResult.TotalNumberOfResults;
   const page = mockQueryResult.Page;
   const pageSize = mockQueryResult.PageSize;
+  const searchKeyword = "test";
 
   test("renders the correct range of items based on page and pageSize", () => {
     act(() => {
@@ -16,6 +17,7 @@ describe("SearchResult", () => {
           total={total}
           page={page}
           pageSize={pageSize}
+          searchKeyword={searchKeyword}
         />
       );
     });
@@ -41,6 +43,7 @@ describe("SearchResult", () => {
           total={total}
           page={page}
           pageSize={pageSize}
+          searchKeyword={searchKeyword}
         />
       );
     });
@@ -64,9 +67,21 @@ describe("SearchResult", () => {
 
   test('renders "No results found!" when result items are empty', () => {
     act(() => {
-      render(<SearchResult items={[]} total={0} page={1} pageSize={10} />);
+      render(
+        <SearchResult
+          items={[]}
+          total={0}
+          page={1}
+          pageSize={10}
+          searchKeyword={searchKeyword}
+        />
+      );
     });
 
-    expect(screen.getByText("No results found!")).toBeInTheDocument();
+    const errorMsgElement = screen.getByTestId("error-msg");
+    expect(errorMsgElement).toBeInTheDocument();
+    expect(errorMsgElement.textContent).toBe(
+      `No results found for your search "${searchKeyword}".`
+    );
   });
 });

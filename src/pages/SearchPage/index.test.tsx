@@ -25,4 +25,27 @@ describe("SearchPage", () => {
       expect(fetchSearchResultSpy).toHaveBeenCalled();
     });
   });
+
+  test("should display network error when API call fails", async () => {
+    act(() => {
+      render(<SearchPage />);
+    });
+    const fetchSearchResultSpy = jest
+      .spyOn(searchService, "fetchSearchResult")
+      .mockResolvedValue({ error: new Error(), data: null });
+
+    const searchInputElement = screen.getByLabelText("search-textfield");
+    const searchBtnElement = screen.getByLabelText("search-btn");
+
+    const testInput = "c";
+    await userEvent.type(searchInputElement, testInput);
+    await userEvent.click(searchBtnElement);
+
+    await waitFor(async () => {
+      expect(fetchSearchResultSpy).toHaveBeenCalled();
+      expect(
+        await screen.findByText("Network error. Please try again later!")
+      ).toBeInTheDocument();
+    });
+  });
 });

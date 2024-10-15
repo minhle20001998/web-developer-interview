@@ -7,10 +7,11 @@ interface IProps {
   total: number;
   page: number;
   pageSize: number;
+  searchKeyword: string;
 }
 
 function SearchResult(props: IProps) {
-  const { items, total, page, pageSize } = props;
+  const { items, total, page, pageSize, searchKeyword } = props;
 
   const firstItemIndex = (page - 1) * pageSize + 1;
   const lastItemIndex = firstItemIndex - 1 + items.length;
@@ -19,7 +20,7 @@ function SearchResult(props: IProps) {
     <div className="w-4/5">
       {items.length ? (
         <>
-          <div className="font-semibold my-10">
+          <div className="font-semibold my-10 text-[22px]">
             Showing {firstItemIndex} - {lastItemIndex} of {total} results
           </div>
 
@@ -61,7 +62,10 @@ function SearchResult(props: IProps) {
           </div>
         </>
       ) : (
-        <div className="my-10">No results found!</div>
+        <div className="my-10" data-testid="error-msg">
+          No results found for your search{" "}
+          <span className="font-bold">"{searchKeyword}"</span>.
+        </div>
       )}
     </div>
   );

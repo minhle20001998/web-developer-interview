@@ -1,5 +1,11 @@
 import SearchBox from ".";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import suggestion from "@/mock/suggestion.json";
 import * as searchService from "@/services/search";
@@ -171,10 +177,19 @@ describe("SearchBox", () => {
       const suggestionDropdown = await screen.findByRole("list");
 
       await act(async () => {
-        await userEvent.type(searchInputElement, "{arrowdown}");
-        await userEvent.type(searchInputElement, "{arrowdown}");
-        await userEvent.type(searchInputElement, "{arrowup}");
-        await userEvent.type(searchInputElement, "{enter}");
+        fireEvent.keyDown(searchInputElement, {
+          key: "ArrowDown",
+          code: "ArrowDown",
+        });
+        fireEvent.keyDown(searchInputElement, {
+          key: "ArrowDown",
+          code: "ArrowDown",
+        });
+        fireEvent.keyDown(searchInputElement, {
+          key: "ArrowUp",
+          code: "ArrowUp",
+        });
+        fireEvent.keyDown(searchInputElement, { key: "Enter", code: "Enter" });
       });
 
       await waitFor(() => {

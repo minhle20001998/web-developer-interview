@@ -33,6 +33,7 @@ function SearchBox(props: ISearchBoxProps) {
    */
   const handleSubmit = () => {
     setIsDropdownOpen(false);
+    debouncedInput.cancel();
     const inputVal = getInputVal();
     if (inputVal) {
       onSearch(inputVal);
@@ -76,7 +77,7 @@ function SearchBox(props: ISearchBoxProps) {
 
   /**
    * Handle onKeyDown event of textfield input.
-   * When user presses up or down error, active suggestion index will be updated.
+   * When user presses up or down arrow, active suggestion index will be updated.
    * When user presses enter, it will either:
    * - Select the active suggestion (set input textfield to the active suggestion and then perform search) if user is navigating through the dropdown.
    * - Perform search with the current input value if user is not navigating through the dropdown.
@@ -158,7 +159,7 @@ function SearchBox(props: ISearchBoxProps) {
         )}
         {shouldDropdownBeDisplayed && (
           <ul
-            className="absolute w-full py-3 rounded-b-lg shadow-general border-x border-b bg-white flex flex-col translate-y-1"
+            className="absolute w-full py-3 rounded-b-lg shadow-general bg-white flex flex-col translate-y-0.5"
             aria-label="suggestion-dropdown"
           >
             {suggestions.map((suggestion, index) => (
